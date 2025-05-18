@@ -1,0 +1,203 @@
+Oracle Enterprise Manager Cloud Control 13c Release 5
+Copyright (c) 1996, 2021 Oracle Corporation.  All rights reserved.
+Oracle Enterprise Manager Cloud Control 13c Release 5 Agent Commands:
+Lifecycle Commands Usage:
+emctl start agent
+   Starts the agent.
+emctl stop agent
+   Stops the agent.
+
+Agent Operations Usage:
+emdctl run_autotune agent
+   This command auto tunes the agent.  Autotuning should be attempted when
+   the agent is down.  The tuning parameters are dependent on the configuration    of the agent.
+emctl set credentials TARGET_NAME:TARGET_TYPE
+   Interactively sets the credential properties for the specified target.
+emctl stop agent
+   This command stops the agent.
+emctl status agent [TIMEOUT]
+   Returns the status of the agent
+   TIMEOUT: timeout value in seconds
+emctl gensudoprops
+   Generates public, private key pair used for trusted remote operations
+emctl verifykey
+   Verifies that the ssl handshake succeeds with the agent key and also sends a request
+   to the agent to ping the OMS
+
+emctl control agent unsuspend_metric TARGETNAME,TARGETTYPE COLLECTIONITEM METRIC_COLLNAME
+   This command can be used to unsuspend metrics for a given target.
+   TARGETNAME,TARGETTYPE: Target is specified by specifying the target name and type separated by a ','
+   COLLECTIONITEM: Collection item name
+   METRIC_COLLNAME: Name of the metric collection that needs to be unsuspended.
+emctl upload agent
+   Request an upload of collected metric data and severity
+emctl control agent runCollection TARGETNAME:TARGETTYPE COLLECTIONITEM ...
+   Runs the collections item(s) for the specified target instance
+emctl dumpstate agent [-dump_full_state] [COMPONENTNAME ...]
+   Dumps the internal state of the specified list of components.
+emctl clearstate agent [TARGETNAME,TARGETTYPE ...] | [-incrementalconfig TARGETNAME,TARGETTYPE[,COLLECTIONITEM] ... ]
+
+1. Clear all severity state of the agent
+
+         All target states can be cleared by running:
+
+         emctl clearstate agent
+
+2. Clear the severity state of a specific set of targets
+
+         Specific target state can be cleared by specifying:
+
+         emctl clearstate agent TARGETNAME,TARGETTYPE ...
+
+3. Clear just the incremental state of config metrics.
+
+         Incremental config state can be cleared by specifying:
+
+         emctl clearstate agent -incrementalconfig TARGETNAME,TARGETTYPE[,COLLECTIONITEM] ...
+
+
+
+emctl stopschedule agent [-type TARGETTYPE | TARGETNAME,TARGETTYPE ] [-disable_response] [-disable_agent_schedule]
+   Stops data collection for a specific target instance or for all targets of a specific type.
+   If no target instance is specified or no type is specified then this command will stop
+   all collections for a target except for the target response and collections for the agent target.
+    -disable_response can be used to specify that collection of target response should also be stopped.
+    -disable_agent_schedule can be used to specify that agent collections should also be stopped.
+emctl setproperty agent [-allow_new] -name PROPERTY_NAME -value PROPERTY_VALUE
+   Sets the specified property name and value in agent configuration file
+   -allow_new is an optional flag that inserts a new property in Agent configuration
+              file if it does not exist.
+   -allow_new must be the first option provided to the command
+emctl getmetric agent TARGETNAME,TARGETTYPE,METRICNAME [-force]
+   Performs a realtime evaluation of the metric and displays the results for the specified metric
+   -force : (optional) if specified, evaluate the metric even if the target is in blackout
+emctl getproperty agent {-name NAME_1 [... NAME_N] | -category NAME_1 }
+   Gets the specified properties or a category of properties from agent configuration files
+   Note: -name takes a list of property names separated by spaces.  Currently this command
+   does not support spaces in the name.
+emctl clear_property agent -name PROPERTY_NAME
+   Clears the value for the specified property in agent configuration file
+emctl clearsudoprops
+   Clears public, private key pair used for trusted remote operations
+emctl startschedule agent [-type TARGETTYPE | TARGETNAME,TARGETTYPE]
+   Starts data collection for a specific target instance or for all targets of a specific type.
+   If no target instance is specified or no type is specified then this command will start
+   all the stopped collections.
+emctl pingOMS
+   Sends a ping request to the OMS
+emctl reload [agent dynamicproperties [-upload_timeout TIMEOUT] TARGETNAME:TARGETTYPE ...]
+   reload agent : reloads configuration properties of the agent
+   dynamicproperties : sends a request to the agent to recompute dynamic properties for the specified targets
+   -upload_timeout TIMEOUT: (optional) if specified and value is greater than 0, the agent will attempt to
+                            upload the dynamic properties before the command returns control.
+
+emctl resetTZ agent
+   Resets the Timezone region of the agent.
+emctl getversion
+   Prints the version of the agent.
+emctl switchOMS REPOSITORY_URL
+   Switches the repository url of the agent to point to the specified REPOSITORY_URL.
+   This command is not supported.
+Agent Status Commands Usage:
+emctl status agent mcache TARGET_NAME,TARGET_TYPE[,METRIC_NAME]
+   Displays status of metric cache
+emctl status agent scheduler [-summary]
+   Displays status of the agent's scheduler
+emctl status agent jobs
+   Displays status of job commands currently being executed
+emctl status agent target TARGET_NAME,TARGET_TYPE
+   Displays severity state for the target
+emdctl status url URL ...
+   This command performs an HTTP GET on the specified list of urls
+emctl status agent oci
+   Displays status of connection pool
+   Note: This command is deprecated.  Use: emctl status agent dbconnections
+emctl status agent dbconnections
+   Displays status of connection pool
+emctl status agent cpu [-depth n | -full_cpu_report ]
+   Displays task cpu statistics.
+   -depth n : report on the top N tasks
+   -full_cpu_report : reports on all the tasks.
+emctl status agent verify
+   Verifies that the ssl handshake succeeds with the agent key.
+emctl status agent -secure [-omsurl <http://<oms-hostname>:<oms-unsecure-port>/em/*>]
+emctl status agent
+
+Config Usage:
+emctl config agent getTZ
+  Gets the system timezone from the environment.
+emctl config agent getsupportedtz
+  Gets the supported timezone for the system timezone specified in the environment.
+  Note: If the above command returns UTC or a GMT offset timezone, it means that
+        the timezone in your environment is not supported.  For a complete list
+        of supported timezones, refer to /oracle/product/OEM/emagent/GoldImage_GI_13c5_RU19/agent_13.5.0.0.0/sysman/admin/supportedtzs.lst.
+emctl config agent listtargets
+  Lists the targets that have been registered with the agent.
+
+Relocate Targets Usage:
+emctl relocate_target agent TARGETNAME TARGETTYPE [<name1>=<value1>]* [-force]
+
+Blackout Operations Usage:
+emctl updateblkoutts OLD_TIMEZONE NEW_TIMEZONE
+   Updates the timestamps in agent blackouts.xml when the timezone region is changed
+emctl stop blackout BLACKOUTNAME [-nowait]
+   Stops a blackout
+   -nowait switch bypasses the synchronization mechanism for blackouts
+emctl status blackout [TARGETNAME[:TARGETTYPE]]...
+
+   Returns the status of blackouts for a specific set of targets or the local host if no targets are specified.
+
+   Each TARGETNAME:TARGETTYPE should be separated by a space
+   For Example: To get status of blackouts on target1 of targettype1, and on target2 of targettype2 the command will be:
+   	emctl status blackout target1:targettype1 target2:targettype2
+
+emctl start blackout BLACKOUTNAME [-nodeLevel] [-include_remote_hosts] [-host HOST_NAME]  [TARGETNAME[:TARGETTYPE]]... [-patching -timeout DURATION] [-d DURATION] [-allow_jobs] [-nowait]
+   Starts a blackout on the specified target
+
+   TARGETNAME:TARGETTYPE defaults to the local node if not specified
+   Each TARGETNAME:TARGETTYPE should be separated by a space
+   For Example: To start a blackout with name blackout1 on target1 of targettype1, and on target2 of targettype2 the command will be:
+   	emctl start blackout blackout1 target1:targettype1 target2:targettype2
+
+   If -nodeLevel is specified after BLACKOUTNAME, the blackout will be applied to all targets and any target list that follows will be ignored.
+
+   If -host is specified with -nodeLevel, it is treated as a host level blackout of the remote host. Any targets that are added later to the host are also included.
+
+   If -host is specified without -nodeLevel, the blackout will only include all the targets on host HOST_NAME. Any target list that follows will be ignored
+     The -host filter is only applied at the time of this command. Any target subsequently added on that host will remain unaffected by this blackout
+
+   -include_remote_hosts is required with -nodeLevel on a remote agent if -host is not provided to indicate understanding that this applies to all targets, including those on remote hosts.
+
+   -patching indicates that this blackout is set so that software may be patched
+   -timeout DURATION: when specified for a patching blackout, how long to wait for the OMS to deliver the blackout
+
+   DURATION is specified in [[days] hh:]mm
+
+   -nowait switch bypasses the synchronization mechanism for blackouts
+
+Agent Miscellaneous Commands Usage:
+emctl getemhome
+   Gets the state directory of the agent
+emctl lint [-help] {-plugin_id <plugin_id> | [-metadata <metadata_file>] [-collection <default_collection_file]} [-err_level {info|warn|error}]
+emctl jmxcli [-help] [-t JVM help | -t WebLogic help] [<Oracle Home of OC4J> help]
+emctl wscli [-help]
+emctl restcli [-help]
+emctl wsmancli [-help]
+   Validates target type metadata and default collection files
+emctl listplugins agent [<plugin_id> *]
+   Lists the plugins configured against this agent
+emctl annotateconfigfiles agent [<template files dir> <config files dir>]
+   Annotate agent configuration file.
+   Note: This command is not supported.
+emctl refresh_remote_cache agent HOSTNAME
+   Request a refresh of the remote cache for the specified host.
+
+Secure Agent Usage :
+emctl secure agent [registration password] [-emdWalletSrcUrl <url>] [-protocol <ssl|tls|tlsv1|tlsv1.1|tlsv1.2>] [-wallet <custom wallet location> | -force]
+emctl unsecure agent
+emctl secure add_trust_cert -trust_certs_loc <loc>
+emctl secure add_trust_cert_to_jks [-password <password> -trust_certs_loc <loc> -alias <alias>]
+   where
+      password - password to the AgentTrust.jks (if not specified will be prompted for)
+      trust_certs_loc - location of the cert file to import
+      alias - alias for the cert to import
